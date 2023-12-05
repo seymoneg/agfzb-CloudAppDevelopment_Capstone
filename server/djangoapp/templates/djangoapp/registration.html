@@ -4,8 +4,37 @@
     <meta charset="UTF-8">
     {% load static %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        .custom-form {
+            padding: 20px; /* Adjust the padding value as needed */
+        }
+    </style>
 </head>
     <body>
+        <h1>Sign Up</h1>
     <!--Add a registration form here -->
+        <form method="post" class="form-group custom-form" action="{% url 'djangoapp:register' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">User Name</label><br>
+                <input type="text" name="username" class="form-control" id="username" placeholder="Enter Username:" required>
+            </div>
+            <div class="form-group">
+                <label for="fname">First Name</label><br>
+                <input type="text" name="firstname" class="form-control" id="fname" placeholder="Enter First Name:" required>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name</label><br>
+                <input type="text" name="lastname" class="form-control" id="lname" placeholder="Enter Last Name:" required>
+            </div>
+            <div class="form-group">
+                <label for="pass">Password</label><br>
+                <input type="password" name="password" class="form-control" id="pass" placeholder="Enter Password:" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Sign up</button>
+            </div>
+        </form>
     </body>
 </html>
