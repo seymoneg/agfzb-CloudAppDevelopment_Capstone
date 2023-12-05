@@ -25,18 +25,23 @@
             <a class="nav navbar-nav" href="{% url 'djangoapp:contact' %}">Contact Us</a>
             <a class="nav navbar-nav" href="{% url 'djangoapp:contact' %}">Sign Up</a>
             <!-- create form to accept username and password -->
-            <form method="post" class="form-inline">
-                {% csrf_token %}
-                <div class="form-group mx-sm-2">
-                    <input type="text" class="form-control" id="username" placeholder="Username" required>
-                </div>
-                <div class="form-group mx-sm-2">
-                    <input type="password" class="form-control" id="password" placeholder="Password" required>
-                </div>
-                <div class="form-group mx-sm-2">
-                    <a class="btn btn-primary" href="{% url 'djangoapp:contact' %}">Login</a>
-                </div>
-            </form>
+            {% if user.is_authenticated %}
+                {{user.username}}
+                <li style="list-style: none;"><a href="/logout">Logout</a></li>
+            {% else %}
+                <form method="post" class="form-inline">
+                    {% csrf_token %}
+                    <div class="form-group mx-sm-2">
+                        <input type="text" name="username" class="form-control" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group mx-sm-2">
+                        <input type="password" name="psw" class="form-control" id="psw" placeholder="Password" required>
+                    </div>
+                    <div class="form-group mx-sm-2">
+                        <a class="btn btn-primary" href="{% url 'djangoapp:login' %}">Login</a>
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </nav>
 
