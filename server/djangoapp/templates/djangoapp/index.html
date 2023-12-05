@@ -14,8 +14,6 @@
 </head>
 
     <body>
-    <!-- Remove this line the first time you edit this file -->
-     <!-- This is the index page of your Django app! -->
 
     <!--Add a nav bar for ABOUT US and CONTACT US --> 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -25,6 +23,20 @@
             </div>
             <a class="nav navbar-nav" class="active" href="{% url 'djangoapp:about' %}">About</a>
             <a class="nav navbar-nav" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+            <a class="nav navbar-nav" href="{% url 'djangoapp:contact' %}">Sign Up</a>
+            <!-- create form to accept username and password -->
+            <form method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="form-group mx-sm-2">
+                    <input type="text" class="form-control" id="username" placeholder="Username" required>
+                </div>
+                <div class="form-group mx-sm-2">
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <div class="form-group mx-sm-2">
+                    <a class="btn btn-primary" href="{% url 'djangoapp:contact' %}">Login</a>
+                </div>
+            </form>
         </div>
     </nav>
 
