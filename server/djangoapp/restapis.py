@@ -4,6 +4,11 @@ import json
 from requests.auth import HTTPBasicAuth
 from .models import CarDealer
 import logging
+from requests.auth import HTTPBasicAuth
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_watson.natural_language_understanding_v1 import Features,SentimentOptions
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +19,7 @@ def get_request(url, **kwargs):
     # If argument contain API KEY
     api_key = kwargs.get("api_key")
     print("GET from {} ".format(url))
+    response = None
     try:
         if api_key:
             params = dict()
@@ -31,10 +37,14 @@ def get_request(url, **kwargs):
         # If any error occurs
         print("Network exception occurred")
 
-    status_code = response.status_code
-    print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return json_data
+    if response is not None:
+        status_code = response.status_code
+        print("With status {} ".format(status_code))
+        json_data = json.loads(response.text)
+        return json_data
+    else:
+        print("Error: No response")
+        return None
 
 
 # Create a `post_request` to make HTTP POST requests
@@ -49,24 +59,28 @@ def get_request(url, **kwargs):
 def get_dealers_from_cf(url, **kwargs):
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url)
-    if json_result:
+    # json_result = get_request(url)
+    response = requests.get(url)
+
+    if response.status_code == 200:
+    # if json_result:
         # Get the row list in JSON as dealers
-        dealers = json_result
+        # dealers = json_result
         try:
-            dealers = json.loads(json_result)
+            # dealers = json.loads(json_result)
+            dealers = response.json()
             # For each dealer object
             for dealer in dealers:
                 logger.info(type(dealer))
                 # Get its content in `doc` object
                 dealer_doc = dealer
                 # Create a CarDealer object with values in `doc` object
-                dealer_obj = CarDealer(dealer_id=dealer_doc["id"],
+                dealer_obj = CarDealer(id=dealer_doc["id"],
                                     city=dealer_doc["city"],
-                                    state=dealer_doc["state"],
+                                    # state=dealer_doc["state"],
                                     st=dealer_doc["st"],
                                     address=dealer_doc["address"],
-                                    zip_code=dealer_doc["zip"],
+                                    zip=dealer_doc["zip"],
                                     lat=dealer_doc["lat"],
                                     long=dealer_doc["long"],
                                     short_name=dealer_doc["short_name"],
@@ -100,6 +114,38 @@ def get_dealer_by_id_from_cf(url, id):
 # def get_dealer_by_id_from_cf(url, dealerId):
 # - Call get_request() with specified arguments
 # - Parse JSON results into a DealerView object list
+def get_dealer_reviews_from_cf(url, **kwargs):
+    results = []
+    id = kwargs.get("id")
+    if id:
+        json_result = get_request(url, id=id)
+    else:
+        json_result = get_request(url)
+    print(json_result,"96")
+    if json_result:
+        reviews = json_result["data"]["docs"]
+        for dealer_review in reviews:
+            review_obj = DealerReview(dealership=dealer_review["dealership"],
+                                   name=dealer_review["name"],
+                                   purchase=dealer_review["purchase"],
+                                   review=dealer_review["review"])
+            if "id" in dealer_review:
+                review_obj.id = dealer_review["id"]
+            if "purchase_date" in dealer_review:
+                review_obj.purchase_date = dealer_review["purchase_date"]
+            if "car_make" in dealer_review:
+                review_obj.car_make = dealer_review["car_make"]
+            if "car_model" in dealer_review:
+                review_obj.car_model = dealer_review["car_model"]
+            if "car_year" in dealer_review:
+                review_obj.car_year = dealer_review["car_year"]
+            
+            sentiment = analyze_review_sentiments(review_obj.review)
+            print(sentiment)
+            review_obj.sentiment = sentiment
+            results.append(review_obj)
+
+    return results
 
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text

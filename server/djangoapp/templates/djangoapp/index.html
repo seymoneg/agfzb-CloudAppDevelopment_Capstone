@@ -88,6 +88,8 @@
            </footer>
        </div>
     </body>
-
-
+    <script>
+        // use |safe filter to prevent HTML escaping out of the JSON string
+        var dealerships = {{ dealerships|safe }};
+    </script>
 </html>

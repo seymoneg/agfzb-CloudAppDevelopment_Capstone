@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -89,16 +89,26 @@ def registration_request(request):
 
 def get_dealerships(request):
     if request.method == "GET":
-        url = "https://seymoneagugn-3000.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        url = "http://127.0.0.1:3000/dealerships/get"
         dealerships = get_dealers_from_cf(url)
-        context = {}
-        context["dealerships"] = dealerships
+        
+        # context = {}
+        # context["dealerships"] = dealerships
+        context = {"dealership_list": dealerships}
         return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_details(request, id):
+    if request.method == "GET":
+        url = "http://127.0.0.1:5000/api/get_reviews"
+        # Get dealers from the URL
+        reviews = get_dealer_reviews_from_cf(url, id=id)
+        # Concat all dealer's short name
+        dealer_names = " ".join([dealer.name for dealer in reviews])
+        # Return a list of dealer short name
+        print(reviews)
+        return render(request,"djangoapp/dealer_details.html",{"reviews": reviews, "id": id},)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
