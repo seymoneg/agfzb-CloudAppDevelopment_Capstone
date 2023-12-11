@@ -9,6 +9,10 @@ from django.contrib import messages
 from datetime import datetime
 import logging
 import json
+from django.db import models
+from django.core import serializers
+from django.utils.timezone import now
+import uuid
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -82,15 +86,14 @@ def registration_request(request):
             return redirect("djangoapp:register")
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
+
 def get_dealerships(request):
     if request.method == "GET":
         url = "https://seymoneagugn-3000.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
-        # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        context = {}
+        context["dealerships"] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
