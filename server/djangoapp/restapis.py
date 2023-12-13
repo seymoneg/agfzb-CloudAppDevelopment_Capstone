@@ -101,7 +101,9 @@ def get_dealers_from_cf(url, **kwargs):
 
 def get_dealer_by_id_from_cf(url, id):
     json_result = get_request(url, id=id)
-    if json_result:
+    dealer_obj = None
+
+    if json_result and "body" in json_result and json_result["body"]:
         dealer_doc = json_result["body"][0]
         dealer_obj = CarDealer(
             address=dealer_doc["address"],
