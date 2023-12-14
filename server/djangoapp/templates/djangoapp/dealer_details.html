@@ -20,9 +20,9 @@
             <!-- create form to accept username and password -->
             {% if user.is_authenticated %}
                 <li style="list-style: none;">
+                    <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer.id%}">Add Review</a>
                     <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
                     <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
-                    <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer.id%}">Add Review</a>
                 </li>
             {% else %}
                 <form method="post" class="form-inline" action="{% url 'djangoapp:login' %}">
